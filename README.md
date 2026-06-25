@@ -17,7 +17,7 @@ Un proyecto para convertir señales dispersas de Microsoft 365 en reportes, aler
 
 ## Visión General
 
-**Geonosis SOC AI** es un toolkit de automatización SOC para entornos Microsoft 365 / Entra ID. Combina reglas deterministas, consultas KQL, Microsoft Graph, Defender XDR, Sentinel, Intune y una capa opcional de IA para generar:
+**Alertas SOC AI powered** es un toolkit de automatización SOC para entornos Microsoft 365 / Entra ID. Combina reglas deterministas, consultas KQL, Microsoft Graph, Defender XDR, Sentinel, Intune y una capa opcional de IA para generar:
 
 - reportes semanales de postura y amenazas;
 - alertas críticas deduplicadas;
@@ -25,7 +25,7 @@ Un proyecto para convertir señales dispersas de Microsoft 365 en reportes, aler
 - playbooks de respuesta a incidentes;
 - flujos asistidos por agentes para triage, hunting, scoring y remediación controlada.
 
-El objetivo no es reemplazar al administrador, sino darle un segundo cerebro operativo: menos consola por consola, más contexto, trazabilidad y priorización.
+El objetivo es tener a mano una orquestacion de alertas automatizada en canales de Microsoft Teams sin tener que utilizar capas de alertas extra con sistemas de terceros. solo utilizar lo que esta el stack de microsoft 365 a bajo costo.
 
 ## Para Quién Es
 
@@ -47,7 +47,7 @@ Este proyecto está pensado para:
 | El reporte semanal toma tiempo | Genera un informe estructurado con postura, amenazas y prioridades. |
 | Las alertas se repiten | Usa firma de estado para no notificar lo mismo una y otra vez. |
 | Falta contexto para decidir | Enriquece con riesgo, entidades, tendencias y evidencia. |
-| La IA puede ser riesgosa | La IA analiza y propone; las acciones sensibles quedan con aprobación humana. |
+| La IA puede ser riesgosa tomando decisiones | La IA analiza y propone; las acciones sensibles quedan con aprobación humana. |
 | Hay que responder incidentes | Incluye agentes y playbooks para triage, hunting, forense y remediación DryRun. |
 
 ## Arquitectura
