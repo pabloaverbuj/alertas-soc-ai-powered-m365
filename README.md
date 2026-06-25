@@ -1,6 +1,6 @@
 <div align="center">
 
-# Alertas SOC AI powered
+# Alertas SOC AI Powered M365
 
 ### Automatización SOC para Microsoft 365, Entra ID, Defender, Sentinel e Intune
 
@@ -17,7 +17,7 @@ Un proyecto para convertir señales dispersas de Microsoft 365 en reportes, aler
 
 ## Visión General
 
-**Alertas SOC AI powered** es un toolkit de automatización SOC para entornos Microsoft 365 / Entra ID. Combina reglas deterministas, consultas KQL, Microsoft Graph, Defender XDR, Sentinel, Intune y una capa opcional de IA para generar:
+**Alertas SOC AI Powered M365** es un toolkit de automatización SOC para entornos Microsoft 365 / Entra ID. Combina reglas deterministas, consultas KQL, Microsoft Graph, Defender XDR, Sentinel, Intune y una capa opcional de IA para generar:
 
 - reportes semanales de postura y amenazas;
 - alertas críticas deduplicadas;
@@ -122,7 +122,7 @@ Responsabilidades:
 ## Estructura Del Repositorio
 
 ```text
-geonosis-soc-ai/
+alertas-soc-ai-powered-m365/
   config/
     settings.example.json
     crown-jewels.example.json
@@ -158,8 +158,8 @@ geonosis-soc-ai/
 ### 1. Clonar el repositorio
 
 ```powershell
-git clone https://github.com/pabloaverbuj/geonosis-soc-ai.git
-cd geonosis-soc-ai
+git clone https://github.com/pabloaverbuj/alertas-soc-ai-powered-m365.git
+cd alertas-soc-ai-powered-m365
 ```
 
 ### 2. Crear configuración local
