@@ -1,6 +1,6 @@
 <div align="center">
 
-# Geonosis SOC AI
+# Alertas SOC AI powered
 
 ### Automatización SOC para Microsoft 365, Entra ID, Defender, Sentinel e Intune
 
