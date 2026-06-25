@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "geonosis-soc-ai/consolidated-output",
+  "title": "Salida consolidada multiagente de un caso SOC",
+  "type": "object",
+  "required": ["caseId", "playbook", "agentsRun", "severity", "status"],
+  "properties": {
+    "caseId":    { "type": "string", "pattern": "^SOC-[0-9]{8}-[0-9]{4}$" },
+    "playbook":  { "enum": [
+      "M365_ACCOUNT_COMPROMISE_BEC",
+      "M365_PASSWORD_SPRAY",
+      "M365_DEVICE_CODE_PHISHING",
+      "M365_OAUTH_CONSENT",
+      "M365_MAILBOX_FORWARDING"
+    ] },
+    "agentsRun":         { "type": "array", "items": { "type": "string" } },
+    "severity":          { "enum": ["low", "medium", "high", "critical"] },
+    "confidence":        { "enum": ["low", "medium", "high"] },
+    "executiveSummary":  { "type": "string" },
+    "technicalSummary":  { "type": "string" },
+    "confirmedEvidence": { "type": "array" },
+    "hypotheses":        { "type": "array" },
+    "missingEvidence":   { "type": "array" },
+    "kqlArtifacts":      { "type": "array" },
+    "remediationPlan":   { "type": "array" },
+    "approvalRequired":  { "type": "boolean" },
+    "status":            { "enum": ["new", "triage", "enrichment", "pending_approval", "remediated", "closed"] }
+  }
+}

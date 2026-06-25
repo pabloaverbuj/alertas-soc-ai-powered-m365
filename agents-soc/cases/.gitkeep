@@ -1,0 +1,3 @@
+# Carpeta de casos en runtime. Cada caso = agents-soc/cases/SOC-YYYYMMDD-NNNN/
+# Contenido por caso: case.json (estado), evidence/ (salidas de agentes), report.md, approval.json.
+# NO commitear casos reales: pueden contener UPNs/IPs. Ver .gitignore del proyecto.

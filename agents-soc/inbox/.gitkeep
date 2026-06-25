@@ -1,0 +1,3 @@
+# Inbox de alertas SOC normalizadas (provenientes del runbook o manuales).
+# Import-SocAlerts.ps1 deja aquí un .json por alerta; soc-casemanager las consume -> cases/.
+# NO commitear alertas reales (UPNs/IPs). Ver .gitignore.

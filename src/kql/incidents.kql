@@ -1,0 +1,8 @@
+// incidents.kql — respaldo KQL de M5 (si se prefiere Sentinel directo en vez de Graph Security API).
+// Parametrizable por lookback en Invoke-SocKql -TimespanDays.
+SecurityIncident
+| where TimeGenerated >= ago(7d)
+| summarize arg_max(TimeGenerated, *) by IncidentNumber   // último estado de cada incidente
+| project IncidentNumber, Title, Severity, Status, CreatedTime, Owner,
+          AlertIds = array_length(AlertIds), Tactics = Tactics, Techniques = Techniques
+| order by Severity asc, CreatedTime desc

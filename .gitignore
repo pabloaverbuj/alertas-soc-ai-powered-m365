@@ -1,0 +1,30 @@
+# Casos SOC en runtime: contienen UPNs/IPs/evidencia real — NO commitear
+agents-soc/cases/*/
+agents-soc/cases/*.md
+!agents-soc/cases/.gitkeep
+
+# Inbox de alertas normalizadas (UPNs/IPs reales del runbook) — NO commitear
+agents-soc/inbox/*.json
+!agents-soc/inbox/.gitkeep
+
+# Recomendaciones de postura pueden citar tenant real
+agents-soc/posture/*.md
+
+# Secretos / locales
+*.key
+*.secret
+.env
+.env.*
+local.settings.json
+config/settings.json
+config/crown-jewels.json
+
+# Salidas temporales/generadas
+*.log
+*.tmp
+~$*
+*.bak
+*.bak-*
+
+# Documentos editables/exportados con posible informacion interna
+docs/*.docx

@@ -1,0 +1,20 @@
+{
+  "_comment": "Example list of critical assets used to prioritize attack paths and critical notifications. Copy to crown-jewels.json and replace with your own roles, identities, groups, devices and cloud resources.",
+  "identities": [
+    { "type": "role", "value": "Global Administrator", "tier": 0 },
+    { "type": "role", "value": "Privileged Role Administrator", "tier": 0 },
+    { "type": "role", "value": "Security Administrator", "tier": 0 },
+    { "type": "user", "value": "breakglass@example.com", "tier": 0, "note": "Break-glass account" },
+    { "type": "servicePrincipal", "value": "security-automation-managed-identity", "tier": 1, "note": "Automation identity" }
+  ],
+  "groups": [
+    { "value": "Privileged Admins", "tier": 0, "note": "Group assigning privileged roles" }
+  ],
+  "devices": [
+    { "value": "deployment-server", "tier": 1, "note": "Endpoint deployment or management server" }
+  ],
+  "cloudResources": [
+    { "type": "logAnalytics", "value": "sentinel-workspace-name", "tier": 0, "note": "Microsoft Sentinel workspace" },
+    { "type": "automationAccount", "value": "aa-soc-ai", "tier": 1, "note": "SOC automation account" }
+  ]
+}
