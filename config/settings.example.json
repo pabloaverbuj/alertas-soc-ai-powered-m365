@@ -1,0 +1,65 @@
+{
+  "organizationName": "Example Organization",
+  "tenantId": "00000000-0000-0000-0000-000000000000",
+  "workspace": {
+    "name": "sentinel-workspace-name",
+    "workspaceId": "00000000-0000-0000-0000-000000000000",
+    "subscriptionId": "00000000-0000-0000-0000-000000000000",
+    "resourceGroup": "rg-security"
+  },
+  "ai": {
+    "provider": "azure-openai",
+    "azureEndpoint": "https://your-azure-openai-resource.openai.azure.com",
+    "deployment": "gpt-4o-mini",
+    "azureApiVersion": "2024-10-21",
+    "maxTokens": 3000,
+    "redactPII": true,
+    "endpoint": "https://api.anthropic.com/v1/messages",
+    "apiVersion": "2023-06-01",
+    "modelCritical": "claude-opus-4-8",
+    "modelRoutine": "claude-sonnet-4-6",
+    "apiKeyVariable": "GeonosisSocAi-AnthropicKey"
+  },
+  "delivery": {
+    "teams": { "enabled": true, "webhookVariable": "GeonosisSocAi-TeamsWebhook" },
+    "email": { "enabled": true, "from": "soc@example.com", "to": ["admin@example.com"] }
+  },
+  "schedule": {
+    "weeklyDay": "Monday",
+    "timeLocal": "10:00",
+    "timezone": "America/Argentina/Buenos_Aires",
+    "lookbackDaysWeekly": 7
+  },
+  "thresholds": {
+    "criticalSeverities": ["high"],
+    "highRiskUserAlert": true,
+    "deviceCodeAlert": true,
+    "newAttackPathAlert": true
+  },
+  "spray": {
+    "userThreshold": 5,
+    "trustedEgressIps": []
+  },
+  "oauthHunting": {
+    "ignoreAppPatterns": [
+      "Microsoft Graph",
+      "Microsoft Azure",
+      "Microsoft Office",
+      "Microsoft 365",
+      "Office 365",
+      "Windows Azure",
+      "Microsoft Intune",
+      "Microsoft Teams",
+      "Microsoft Information Protection"
+    ]
+  },
+  "incidents": {
+    "deepFetchAlerts": true,
+    "maxAlertsPerIncident": 8
+  },
+  "coverageBaseline": {
+    "Human_Operated_Ransomware": { "active": 0, "total": 0, "products": "0/0" },
+    "Business_Email_Compromise": { "active": 0, "total": 0, "products": "0/0" },
+    "Device_Code_Phishing": { "active": 0, "total": 0, "products": "0/0" }
+  }
+}

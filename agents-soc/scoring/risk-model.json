@@ -1,0 +1,28 @@
+{
+  "_comment": "Modelo de scoring determinista usado por soc-riskscorer. Suma/resta puntos por factor de evidencia. Clasificación final por bandas. Mantener alineado con SHARED-GUARDRAILS y los playbooks.",
+  "factors": [
+    { "id": "successful_suspicious_login",  "points": 30,  "desc": "Login exitoso desde ubicación/IP sospechosa" },
+    { "id": "mailbox_persistence",          "points": 25,  "desc": "Persistencia confirmada en mailbox (regla/forward)" },
+    { "id": "mfa_method_change",            "points": 25,  "desc": "Cambio de MFA o método de autenticación" },
+    { "id": "privileged_or_vip_user",       "points": 20,  "desc": "Usuario privilegiado o sensible (ver crown-jewels)" },
+    { "id": "suspicious_oauth_consent",     "points": 20,  "desc": "OAuth consent sospechoso / permisos Graph altos" },
+    { "id": "noncompliant_or_unencrypted",  "points": 15,  "desc": "Dispositivo no compliant o sin cifrado asociado" },
+    { "id": "multiple_users_impacted",      "points": 15,  "desc": "Múltiples usuarios impactados / campaña" },
+    { "id": "related_password_spray",       "points": 10,  "desc": "Password spray relacionado" },
+    { "id": "consistent_with_legit_op",     "points": -20, "desc": "Evidencia consistente con operación legítima" },
+    { "id": "no_successful_login",          "points": -15, "desc": "Sin login exitoso" },
+    { "id": "blocked_by_ca_or_mfa",         "points": -10, "desc": "CA/MFA bloqueó el intento" }
+  ],
+  "bands": [
+    { "min": 0,  "max": 24, "severity": "low" },
+    { "min": 25, "max": 49, "severity": "medium" },
+    { "min": 50, "max": 74, "severity": "high" },
+    { "min": 75, "max": 9999, "severity": "critical" }
+  ],
+  "rules": [
+    "El score nunca es negativo: piso en 0.",
+    "Cada factor aplicado debe citar la evidencia que lo justifica (fuente + timestamp).",
+    "Si falta evidencia para confirmar un factor, NO sumarlo: declararlo en missingEvidence.",
+    "severity HIGH/CRITICAL deriva a soc-remediator; toda acción sensible pasa por soc-approver."
+  ]
+}

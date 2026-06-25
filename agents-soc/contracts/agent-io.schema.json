@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "geonosis-soc-ai/agent-io",
+  "title": "Contrato común de E/S de agente SOC",
+  "type": "object",
+  "definitions": {
+    "entities": {
+      "type": "object",
+      "properties": {
+        "users":    { "type": "array", "items": { "type": "string" } },
+        "devices":  { "type": "array", "items": { "type": "string" } },
+        "ips":      { "type": "array", "items": { "type": "string" } },
+        "messages": { "type": "array", "items": { "type": "string" } },
+        "urls":     { "type": "array", "items": { "type": "string" } },
+        "files":    { "type": "array", "items": { "type": "string" } },
+        "apps":     { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "input": {
+      "type": "object",
+      "required": ["caseId", "requestedAction", "mode"],
+      "properties": {
+        "caseId":          { "type": "string", "pattern": "^SOC-[0-9]{8}-[0-9]{4}$" },
+        "alert":           { "type": "object" },
+        "entities":        { "$ref": "#/definitions/entities" },
+        "knownEvidence":   { "type": "array" },
+        "requestedAction": { "enum": ["triage", "enrich", "hunt", "score", "remediate", "report", "approve"] },
+        "mode":            { "enum": ["read_only", "dry_run", "pending_approval", "execute"] },
+        "constraints": {
+          "type": "object",
+          "properties": {
+            "noSecrets":                            { "type": "boolean", "default": true },
+            "noDestructiveActionsWithoutApproval":  { "type": "boolean", "default": true },
+            "maskSensitiveDataInExecutiveOutput":   { "type": "boolean", "default": true }
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["caseId", "agent", "status", "summary", "risk"],
+      "properties": {
+        "caseId":              { "type": "string", "pattern": "^SOC-[0-9]{8}-[0-9]{4}$" },
+        "agent":               { "type": "string" },
+        "status":              { "enum": ["completed", "needs_more_evidence", "pending_approval", "blocked"] },
+        "summary":             { "type": "string" },
+        "confirmedEvidence":   { "type": "array" },
+        "hypotheses":          { "type": "array" },
+        "missingEvidence":     { "type": "array" },
+        "recommendedNextAgent":{ "type": "string" },
+        "recommendedActions":  { "type": "array" },
+        "risk": {
+          "type": "object",
+          "properties": {
+            "severity":         { "enum": ["low", "medium", "high", "critical"] },
+            "confidence":       { "enum": ["low", "medium", "high"] },
+            "falsePositiveRisk":{ "enum": ["low", "medium", "high"] }
+          }
+        },
+        "artifacts": {
+          "type": "object",
+          "properties": {
+            "kql":             { "type": "array" },
+            "powershellDryRun":{ "type": "array" },
+            "reportSections":  { "type": "array" }
+          }
+        }
+      }
+    }
+  }
+}
