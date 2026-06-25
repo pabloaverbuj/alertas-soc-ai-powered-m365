@@ -15,8 +15,6 @@ Un proyecto para convertir señales dispersas de Microsoft 365 en reportes, aler
 
 ---
 
-![Arquitectura SOC AI](docs/Arquitectura-SOC-AI.png)
-
 ## Visión General
 
 **Geonosis SOC AI** es un toolkit de automatización SOC para entornos Microsoft 365 / Entra ID. Combina reglas deterministas, consultas KQL, Microsoft Graph, Defender XDR, Sentinel, Intune y una capa opcional de IA para generar:
