@@ -210,7 +210,7 @@ Formato de alerta: cada señal se normaliza con un `alertId` estable (clave de d
 
 ```mermaid
 flowchart LR
-    F1["Fase 1 — Asistido<br/><small>(actual)</small>"] --> F2["Fase 2 — Semi-automático"] --> F3["Fase 3 — Contención selectiva"]
+    F1["Fase 1 — Asistido<br/>(actual)"] --> F2["Fase 2 — Semi-automático"] --> F3["Fase 3 — Contención selectiva"]
 
     classDef cur fill:#107C10,color:#fff,stroke:#0a4d0a
     classDef next fill:#394149,color:#fff,stroke:#20262e
