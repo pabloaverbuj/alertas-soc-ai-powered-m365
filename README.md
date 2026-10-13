@@ -78,7 +78,7 @@ flowchart LR
     P --> Q["Reporte Ejecutivo + Técnico"]
 ```
 
-> 📐 **Arquitectura completa** — idea, misión, objetivos, diagramas de flujo y el propósito de cada uno de los 10 agentes: ver **[docs/ARQUITECTURA.md](docs/ARQUITECTURA.md)**.
+> 📐 **Arquitectura completa** — idea, misión, objetivos, diagramas de flujo y el propósito de cada uno de los 10 agentes: ver el **[case study de arquitectura](https://github.com/pabloaverbuj/soc-ai-m365-case-study)**.
 
 ## Capas Del Proyecto
 
@@ -151,7 +151,6 @@ alertas-soc-ai-powered-m365/
     cases/
 
   docs/
-    ARQUITECTURA.md
     DOCUMENTACION.md
 ```
 
@@ -285,7 +284,7 @@ El proyecto está en formato **scaffold operativo**: tiene módulos, runbook, do
 
 ## Documentación
 
-- [Arquitectura, idea, misión y objetivos](docs/ARQUITECTURA.md)
+- [Case study de arquitectura (idea, misión, objetivos, flujos, agentes)](https://github.com/pabloaverbuj/soc-ai-m365-case-study)
 - [Documentación técnica](docs/DOCUMENTACION.md)
 - [Setup de Teams Webhook](docs/teams-webhook-setup.md)
 - [Agentes SOC](agents-soc/README.md)
