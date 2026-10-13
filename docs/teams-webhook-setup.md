@@ -1,4 +1,4 @@
-# Teams webhook (Power Automate Workflows) — Geonosis SOC AI
+# Teams webhook (Power Automate Workflows) — Contoso SOC AI
 
 El runbook publica en Teams con el formato de **mensaje + Adaptive Card**:
 
@@ -14,7 +14,7 @@ Esto es el formato de **Workflows** (Power Automate), NO el del viejo Office 365
 
 ## Pasos (vía la app Teams)
 
-1. Elegí el **canal destino** del reporte (ej: `SOC / Geonosis SOC AI`). Si no existe, crealo.
+1. Elegí el **canal destino** del reporte (ej: `SOC / Contoso SOC AI`). Si no existe, crealo.
 2. En Teams: clic en los `…` del canal → **Workflows** (o desde la app **Power Automate** → *Create* → *Instant cloud flow*).
 3. Buscá la plantilla **"Post to a channel when a webhook request is received"**
    (ES: *"Publicar en un canal cuando se recibe una solicitud de webhook"*).
@@ -26,7 +26,7 @@ Esto es el formato de **Workflows** (Power Automate), NO el del viejo Office 365
 
 ```powershell
 Set-AzAutomationVariable -ResourceGroupName 'siem' -AutomationAccountName 'aa-soc-ai' `
-  -Name 'GeonosisSocAi-TeamsWebhook' -Value '<URL-DEL-TRIGGER>' -Encrypted $true
+  -Name 'SocAi-TeamsWebhook' -Value '<URL-DEL-TRIGGER>' -Encrypted $true
 ```
 
 ## (Opcional) Ajustar el flujo para renderizar la card recibida
@@ -50,7 +50,7 @@ $card = @{
       '$schema' = 'http://adaptivecards.io/schemas/adaptive-card.json'
       type = 'AdaptiveCard'; version = '1.4'
       body = @(
-        @{ type='TextBlock'; size='Large'; weight='Bolder'; text='Geonosis SOC AI — TEST' },
+        @{ type='TextBlock'; size='Large'; weight='Bolder'; text='Contoso SOC AI — TEST' },
         @{ type='TextBlock'; isSubtle=$true; text=('Generado: ' + (Get-Date -Format 'yyyy-MM-dd HH:mm')) },
         @{ type='TextBlock'; wrap=$true; text='Si ves esto en el canal, el webhook funciona.' }
       )

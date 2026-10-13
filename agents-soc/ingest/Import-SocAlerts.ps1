@@ -3,8 +3,8 @@
   Puente local: trae las alertas SOC normalizadas que produjo el runbook (Azure Automation) y las
   deja en agents-soc/inbox/ para que soc-casemanager abra casos.
 .DESCRIPTION
-  El runbook 'Invoke-GeonosisSocAi' persiste las señales accionables normalizadas en la Automation
-  Variable 'GeonosisSocAi-SocAlerts' (módulo F-Engine/Export-SocAlerts.psm1). Este script la lee con
+  El runbook 'Invoke-SocAi' persiste las señales accionables normalizadas en la Automation
+  Variable 'SocAi-SocAlerts' (módulo F-Engine/Export-SocAlerts.psm1). Este script la lee con
   Get-AzAutomationVariable, deduplica por alertId contra los casos ya abiertos y el inbox, y escribe
   un .json por alerta nueva en agents-soc/inbox/.
 
@@ -14,7 +14,7 @@
 .PARAMETER AutomationAccount
   Automation Account del runbook (default 'aa-soc-ai').
 .PARAMETER VariableName
-  Variable que contiene el array de alertas (default 'GeonosisSocAi-SocAlerts').
+  Variable que contiene el array de alertas (default 'SocAi-SocAlerts').
 .PARAMETER WhatIf
   Muestra qué se ingeriría sin escribir el inbox.
 .EXAMPLE
@@ -25,7 +25,7 @@
 param(
     [string] $ResourceGroup     = 'siem',
     [string] $AutomationAccount = 'aa-soc-ai',
-    [string] $VariableName      = 'GeonosisSocAi-SocAlerts'
+    [string] $VariableName      = 'SocAi-SocAlerts'
 )
 
 $ErrorActionPreference = 'Stop'

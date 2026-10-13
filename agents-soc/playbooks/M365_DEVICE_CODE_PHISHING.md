@@ -1,6 +1,6 @@
 # Playbook: M365_DEVICE_CODE_PHISHING
 
-Gap conocido Geonosis: CA de bloqueo device-code estuvo en **report-only** → expuesto a Kali365.
+Gap conocido Contoso: CA de bloqueo device-code estuvo en **report-only** → expuesto a Kali365.
 
 ## Disparadores
 - `AuthenticationProtocol = deviceCode`.

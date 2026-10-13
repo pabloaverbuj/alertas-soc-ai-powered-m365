@@ -1,4 +1,4 @@
-# Documentación — Geonosis SOC AI
+# Documentación — Contoso SOC AI
 
 > Estado: piloto en producción acotada. Reporte semanal automatizado de postura y amenazas.
 > Última actualización: 2026-06-18.
@@ -7,7 +7,7 @@
 
 ## 1. Visión general
 
-**Propósito.** `geonosis-soc-ai` automatiza la generación de un reporte semanal de seguridad (postura + amenazas + observabilidad probabilística) sobre el tenant de Geonosis (cloud-only Entra ID + M365, sin Active Directory on-premises), siguiendo el patrón de [Maester]: runbook en Azure Automation con Managed Identity, sin infraestructura local ni secrets en código.
+**Propósito.** `contoso-soc-ai` automatiza la generación de un reporte semanal de seguridad (postura + amenazas + observabilidad probabilística) sobre el tenant de Contoso (cloud-only Entra ID + M365, sin Active Directory on-premises), siguiendo el patrón de [Maester]: runbook en Azure Automation con Managed Identity, sin infraestructura local ni secrets en código.
 
 **Estado actual.** Piloto / aislado. El reporte se entrega **solo a el administrador** (`admin@example.com`) por email + a un canal de Teams. Pensado para ampliarse a dirección.
 
@@ -22,7 +22,7 @@
 **Qué NO cubre todavía.**
 - No ejecuta remediaciones automáticas (solo analiza y recomienda).
 - La IA no toma acciones, solo razona sobre datos provistos.
-- Attack paths dependen de Defender for Cloud / Exposure Management (Geonosis sin IaaS → normalmente 0).
+- Attack paths dependen de Defender for Cloud / Exposure Management (Contoso sin IaaS → normalmente 0).
 - UEBA requiere estar habilitado en Sentinel.
 - ThreatFox/IOCs requiere API key (opcional).
 
@@ -47,7 +47,7 @@ El runbook se construye **concatenando todos los módulos `.psm1` en un único a
 
 ## 3. Flujo de ejecución
 
-Orquestador: `src/Invoke-GeonosisSocAi.ps1`. Parámetro `-Mode weekly|critical`.
+Orquestador: `src/Invoke-SocAi.ps1`. Parámetro `-Mode weekly|critical`.
 
 **Orden A→E:**
 1. **Base** — `Connect-SocContext` (auth MI, carga settings).
@@ -66,7 +66,7 @@ Orquestador: `src/Invoke-GeonosisSocAi.ps1`. Parámetro `-Mode weekly|critical`.
 - Device-code sin bloqueo (si `thresholds.deviceCodeAlert` y hay sign-ins device-code).
 - Config drift high.
 
-**Delta semana-a-semana.** Al final de cada corrida se guarda un snapshot en la variable `GeonosisSocAi-LastState` (counts + incidentes). En la corrida siguiente se carga el snapshot previo y se pasa a la IA como `PrevState` para la sección "Qué cambió vs. el reporte anterior". La primera corrida reporta "sin línea base".
+**Delta semana-a-semana.** Al final de cada corrida se guarda un snapshot en la variable `SocAi-LastState` (counts + incidentes). En la corrida siguiente se carga el snapshot previo y se pasa a la IA como `PrevState` para la sección "Qué cambió vs. el reporte anterior". La primera corrida reporta "sin línea base".
 
 ---
 
@@ -80,8 +80,8 @@ Orquestador: `src/Invoke-GeonosisSocAi.ps1`. Parámetro `-Mode weekly|critical`.
   "ai": { "provider": "azure-openai",
           "azureEndpoint": "https://aoai-soc.openai.azure.com",
           "deployment": "gpt-4o-mini", "azureApiVersion": "2024-10-21", "maxTokens": 3000,
-          "endpoint": "...anthropic...", "apiKeyVariable": "GeonosisSocAi-AnthropicKey" },
-  "delivery": { "teams": { "enabled": true, "webhookVariable": "GeonosisSocAi-TeamsWebhook" },
+          "endpoint": "...anthropic...", "apiKeyVariable": "SocAi-AnthropicKey" },
+  "delivery": { "teams": { "enabled": true, "webhookVariable": "SocAi-TeamsWebhook" },
                 "email": { "enabled": true, "from": "admin@example.com",
                            "to": ["admin@example.com"] } },
   "schedule": { "weeklyDay": "Monday", "timeLocal": "10:00",
@@ -97,7 +97,7 @@ Orquestador: `src/Invoke-GeonosisSocAi.ps1`. Parámetro `-Mode weekly|critical`.
 - **Thresholds**: severidades críticas (`high`), y switches para alerta de high-risk users, device-code y attack paths nuevos.
 - **coverageBaseline**: línea base histórica (referencia; la cobertura real se lee en vivo, ver módulo B).
 
-`settings.json` se sube a la variable `GeonosisSocAi-Settings`; el runbook la lee de ahí cuando no hay filesystem.
+`settings.json` se sube a la variable `SocAi-Settings`; el runbook la lee de ahí cuando no hay filesystem.
 
 ---
 
@@ -107,7 +107,7 @@ Activos críticos para priorizar attack paths (M10) y dar contexto a la IA en la
 
 **Buckets:** `identities` (con sub-tipos `role`, `user`, `servicePrincipal`), `groups`, `devices`, `cloudResources`. Cada entrada tiene `value` (se matchea como substring contra el `displayName`/impacto del target) y `tier` (0 = máximo).
 
-Contenido real poblado: roles Global Administrator / Privileged Role Administrator / Security Administrator; los 5 Global Admins reales; el SP `mail-security-connector`; la MI de Maester; el workspace `SENTINEL-WORKSPACE`; Purview `Geonosis`; las Automation Accounts.
+Contenido real poblado: roles Global Administrator / Privileged Role Administrator / Security Administrator; los 5 Global Admins reales; el SP `mail-security-connector`; la MI de Maester; el workspace `SENTINEL-WORKSPACE`; Purview `Contoso`; las Automation Accounts.
 
 **Uso:**
 - `Get-AttackPaths` matchea targets de attack paths contra crown jewels.
@@ -121,19 +121,19 @@ Contenido real poblado: roles Global Administrator / Privileged Role Administrat
 
 | Variable | Encriptada | Contenido | Quién la actualiza |
 |---|---|---|---|
-| `GeonosisSocAi-Settings` | No | `settings.json` completo | Deploy (desde repo) |
-| `GeonosisSocAi-CrownJewels` | No (sensible) | `crown-jewels.json` | Deploy |
-| `GeonosisSocAi-TeamsWebhook` | Sí | URL del webhook (reusa el de Maester) | Deploy (copia de Maester) |
-| `GeonosisSocAi-AbuseChKey` | Sí | API key ThreatFox (opcional; vacía hoy) | Manual |
-| `GeonosisSocAi-LastState` | No | Snapshot JSON para el delta | El runbook (cada corrida) |
-| `GeonosisSocAi-LogoB64` | No | Isologo PNG en base64 | Deploy (desde `config/geologo.b64.txt`) |
-| `GeonosisSocAi-AnthropicKey` | Sí | Fallback Anthropic (TODO, sin usar) | — |
+| `SocAi-Settings` | No | `settings.json` completo | Deploy (desde repo) |
+| `SocAi-CrownJewels` | No (sensible) | `crown-jewels.json` | Deploy |
+| `SocAi-TeamsWebhook` | Sí | URL del webhook (reusa el de Maester) | Deploy (copia de Maester) |
+| `SocAi-AbuseChKey` | Sí | API key ThreatFox (opcional; vacía hoy) | Manual |
+| `SocAi-LastState` | No | Snapshot JSON para el delta | El runbook (cada corrida) |
+| `SocAi-LogoB64` | No | Isologo PNG en base64 | Deploy (desde `config/geologo.b64.txt`) |
+| `SocAi-AnthropicKey` | Sí | Fallback Anthropic (TODO, sin usar) | — |
 
 **Secretas:** TeamsWebhook, AbuseChKey, AnthropicKey. **No secretas pero confidenciales:** CrownJewels. **No secretas:** Settings, LastState, LogoB64.
 
 **Lectura/modificación:** solo quien tenga rol sobre la Automation Account (Contributor/Automation Operator). El runbook (MI) lee vía `Get-AutomationVariable` y escribe `LastState` vía `Set-AutomationVariable`.
 
-**Redeploy:** `Deploy-GeonosisSocAi.ps1` hace upsert de Settings/CrownJewels/LogoB64 desde el repo; las secretas con valor `TODO` se cargan manualmente (excepto el webhook, que se copia de Maester).
+**Redeploy:** `Deploy-SocAi.ps1` hace upsert de Settings/CrownJewels/LogoB64 desde el repo; las secretas con valor `TODO` se cargan manualmente (excepto el webhook, que se copia de Maester).
 
 ---
 
@@ -178,7 +178,7 @@ Genera el reporte como **documento formal** y lo entrega.
 
 **`Get-BehaviorAnomalies.psm1`** — UEBA, tabla `Anomalies` (KQL). Degrada con gracia si UEBA está apagado (sin datos → nota en el reporte).
 
-**`Get-AttackPaths.psm1`** — Attack paths vía **Azure Resource Graph** (`securityresources | where type=='microsoft.security/attackpaths'`, POST `Microsoft.ResourceGraph/resources` api-version 2021-03-01). Matchea contra crown jewels (`Test-CrownJewelTarget`). Geonosis sin IaaS/Defender for Cloud ⇒ normalmente 0, sin error.
+**`Get-AttackPaths.psm1`** — Attack paths vía **Azure Resource Graph** (`securityresources | where type=='microsoft.security/attackpaths'`, POST `Microsoft.ResourceGraph/resources` api-version 2021-03-01). Matchea contra crown jewels (`Test-CrownJewelTarget`). Contoso sin IaaS/Defender for Cloud ⇒ normalmente 0, sin error.
 
 **`Get-SignInTelemetry.psm1`** — Sign-ins exitosos (KQL): top apps, países activos, **locaciones nuevas** (usuario/país visto por primera vez en la ventana).
 
@@ -193,7 +193,7 @@ Genera el reporte como **documento formal** y lo entrega.
 
 ## 10. Módulo D — Threat Intel
 
-**`Get-ThreatTrends.psm1`** — CISA KEV (feed JSON oficial, CVEs agregados recientes) + ThreatFox/abuse.ch (IOCs). ThreatFox requiere header `Auth-Key` desde nov-2024 → variable opcional `GeonosisSocAi-AbuseChKey`; sin key, omite el feed. Filtra familias PhaaS/AiTM/EvilProxy/Tycoon/Kali365.
+**`Get-ThreatTrends.psm1`** — CISA KEV (feed JSON oficial, CVEs agregados recientes) + ThreatFox/abuse.ch (IOCs). ThreatFox requiere header `Auth-Key` desde nov-2024 → variable opcional `SocAi-AbuseChKey`; sin key, omite el feed. Filtra familias PhaaS/AiTM/EvilProxy/Tycoon/Kali365.
 
 **`Compare-TrendCoverage.psm1`** — Cruza tendencias del mundo real contra los gaps de cobertura del tenant (por regex de nombre de escenario). Mapeos: AiTM/device-code (→ AiTM, Okta, BEC, Credential Exploitation), ransomware (→ Human Operated Ransomware), ERP/SAP/BEC. `Exposed` = el escenario relacionado está en estado Active.
 
@@ -258,12 +258,12 @@ Arma un JSON **rico** (no solo resúmenes) para que la IA pueda hacer triage y c
 
 - **Canal:** vía webhook de **Power Automate Workflows** (reusa el de Maester; mismo formato `type:message/attachments` con Adaptive Card).
 - **Contenido:** Adaptive Card con título, resumen corto (incidentes críticos / high-risk / gaps / drift) y top 5 acciones de remediación (FactSet).
-- **Variable:** `GeonosisSocAi-TeamsWebhook`.
+- **Variable:** `SocAi-TeamsWebhook`.
 - **Si el webhook no existe:** warning `[teams] Sin webhook configurado`, no rompe; el detalle completo igual va por email.
 
 ---
 
-## 16. Deployment (`deploy/Deploy-GeonosisSocAi.ps1`)
+## 16. Deployment (`deploy/Deploy-SocAi.ps1`)
 
 1. **Automation Account** `aa-soc-ai` con **System-assigned Managed Identity** (idempotente).
 2. **Roles Azure** a la MI (scope RG `siem`): Microsoft Sentinel Reader, Log Analytics Reader.
@@ -324,16 +324,16 @@ Arma un JSON **rico** (no solo resúmenes) para que la IA pueda hacer triage y c
 
 ## 19. Operación diaria/semanal
 
-- **Validar que corrió:** `Get-AzAutomationJob -ResourceGroupName siem -AutomationAccountName aa-soc-ai -RunbookName Invoke-GeonosisSocAi | sort CreationTime -desc | select -first 1`.
+- **Validar que corrió:** `Get-AzAutomationJob -ResourceGroupName siem -AutomationAccountName aa-soc-ai -RunbookName Invoke-SocAi | sort CreationTime -desc | select -first 1`.
 - **Revisar jobs / streams:** `Get-AzAutomationJobOutput -Id <jobId> -Stream Any` + `Get-AzAutomationJobOutputRecord`.
-- **Probar weekly:** `Start-AzAutomationRunbook -ResourceGroupName siem -AutomationAccountName aa-soc-ai -Name Invoke-GeonosisSocAi -Parameters @{Mode='weekly'} -Wait`.
+- **Probar weekly:** `Start-AzAutomationRunbook -ResourceGroupName siem -AutomationAccountName aa-soc-ai -Name Invoke-SocAi -Parameters @{Mode='weekly'} -Wait`.
 - **Probar critical:** igual con `@{Mode='critical'}` (solo notifica si hay señal).
 - **IA activa vs no configurada:** si la sección 1 trae las 8 secciones → IA OK; si dice "Capa IA no disponible" + resumen determinista → revisar el recurso/rol Azure OpenAI.
-- **Actualizar destinatarios:** editar `settings.json` `delivery.email.to[]` y re-subir la variable `GeonosisSocAi-Settings` (o re-correr deploy).
-- **Actualizar logo:** reemplazar `config/geologo.b64.txt` (PNG→base64) y re-subir `GeonosisSocAi-LogoB64`.
-- **Actualizar crown jewels:** editar `config/crown-jewels.json` y re-subir `GeonosisSocAi-CrownJewels`.
-- **Reiniciar línea base semanal:** vaciar `GeonosisSocAi-LastState` ⇒ próxima corrida reporta "sin línea base".
-- **Revisar estado anterior:** leer el valor de `GeonosisSocAi-LastState`.
+- **Actualizar destinatarios:** editar `settings.json` `delivery.email.to[]` y re-subir la variable `SocAi-Settings` (o re-correr deploy).
+- **Actualizar logo:** reemplazar `config/geologo.b64.txt` (PNG→base64) y re-subir `SocAi-LogoB64`.
+- **Actualizar crown jewels:** editar `config/crown-jewels.json` y re-subir `SocAi-CrownJewels`.
+- **Reiniciar línea base semanal:** vaciar `SocAi-LastState` ⇒ próxima corrida reporta "sin línea base".
+- **Revisar estado anterior:** leer el valor de `SocAi-LastState`.
 
 ---
 
@@ -346,10 +346,10 @@ Arma un JSON **rico** (no solo resúmenes) para que la IA pueda hacer triage y c
 | **Graph 403** | App role no asignado/propagado; re-correr `Grant-GraphRoles.ps1` y esperar propagación. |
 | **Sentinel/KQL sin datos** | Tabla no ingerida o lookback sin eventos; verificar conectores. |
 | **UEBA sin datos** | Entity Behavior Analytics apagado en Sentinel (Settings > Entity behavior). |
-| **ThreatFox sin key** | `GeonosisSocAi-AbuseChKey` vacía → feed omitido (esperado). |
-| **Teams no publica** | Webhook vacío/incorrecto o flujo de Workflows caído; verificar `GeonosisSocAi-TeamsWebhook`. |
+| **ThreatFox sin key** | `SocAi-AbuseChKey` vacía → feed omitido (esperado). |
+| **Teams no publica** | Webhook vacío/incorrecto o flujo de Workflows caído; verificar `SocAi-TeamsWebhook`. |
 | **Email no llega** | Falta `Mail.Send`, buzón emisor inexistente, o destinatario inválido. |
-| **Logo no aparece** | Outlook con imágenes bloqueadas ("descargar imágenes") o `GeonosisSocAi-LogoB64` vacía; `alt="Geonosis"` de fallback. |
+| **Logo no aparece** | Outlook con imágenes bloqueadas ("descargar imágenes") o `SocAi-LogoB64` vacía; `alt="Contoso"` de fallback. |
 | **Password spray sin datos** | Sin SigninLogs en la ventana, o sin fallos 50126. |
 | **Device-code "expuesto"** | La CA que bloquea device-code está en report-only (hallazgo real, no bug). |
 | **LastState no se guarda** | La variable debe existir (la crea el deploy); `Set-AutomationVariable` no la crea. |
@@ -364,7 +364,7 @@ Arma un JSON **rico** (no solo resúmenes) para que la IA pueda hacer triage y c
 - Depende de que los datos estén presentes en Sentinel/Graph.
 - UEBA requiere estar habilitado.
 - ThreatFox requiere API key para traer IOCs.
-- Attack paths dependen de Defender for Cloud / Exposure Management (Geonosis sin IaaS → 0).
+- Attack paths dependen de Defender for Cloud / Exposure Management (Contoso sin IaaS → 0).
 - No ejecuta remediaciones automáticas; la IA solo analiza.
 - El modo critical depende de los thresholds configurados.
 - Destinatario único; sin segmentación por severidad todavía.
@@ -385,5 +385,5 @@ Arma un JSON **rico** (no solo resúmenes) para que la IA pueda hacer triage y c
 
 ---
 
-*Documento generado para el proyecto geonosis-soc-ai. Código fuente en `C:\Users\el administrador Sosto\.local\bin\geonosis-soc-ai`.*
+*Documento generado para el proyecto contoso-soc-ai. Código fuente en `C:\Users\el administrador Sosto\.local\bin\contoso-soc-ai`.*
 

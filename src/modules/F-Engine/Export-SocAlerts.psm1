@@ -4,7 +4,7 @@
 # el lado local (Import-SocAlerts.ps1 -> agents-soc/inbox/) las ingiera y soc-casemanager abra casos.
 #
 # Persistencia: el orquestador guarda el array devuelto en la Automation Variable
-# 'GeonosisSocAi-SocAlerts' (Set-SocState). El bridge local la lee con Get-AzAutomationVariable.
+# 'SocAi-SocAlerts' (Set-SocState). El bridge local la lee con Get-AzAutomationVariable.
 #
 # alertId es ESTABLE (= clave de la señal, ej "INC:<id>") => el bridge deduplica re-corridas.
 
@@ -72,7 +72,7 @@ function New-SocAlert {
 function Export-SocAlerts {
     <#
       Construye el array de alertas normalizadas a partir de las señales que el orquestador ya tiene.
-      Devuelve [object[]]. El orquestador lo persiste en 'GeonosisSocAi-SocAlerts'.
+      Devuelve [object[]]. El orquestador lo persiste en 'SocAi-SocAlerts'.
       Solo incluye señales ACCIONABLES (las mismas que disparan el modo critical) + hunting de alto valor.
     #>
     [CmdletBinding()]

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Geonosis SOC AI powered — entrypoint del runbook (Azure Automation).
+  Contoso SOC AI powered — entrypoint del runbook (Azure Automation).
 .DESCRIPTION
   Orquesta el flujo en orden A→E:
     base → recolecta B (detección), C (observabilidad), D (threat intel), E (higiene)
@@ -24,7 +24,7 @@ Get-ChildItem "$root/modules" -Recurse -Filter *.psm1 | ForEach-Object { Import-
 $ctx      = Connect-SocContext
 $settings = $ctx.Settings
 $days     = $settings.schedule.lookbackDaysWeekly
-Write-Output "== Geonosis SOC AI ($Mode) =="
+Write-Output "== Contoso SOC AI ($Mode) =="
 
 # --- B. Detección ------------------------------------------------------------
 $incDeep = if ($null -ne $settings.incidents.deepFetchAlerts) { [bool]$settings.incidents.deepFetchAlerts } else { $true }
@@ -75,17 +75,17 @@ $critItems += @($paths.ToCrown | ForEach-Object { "AP:$($_.Id)" })
 $critItems += @($drift.High | ForEach-Object { "DRIFT:$($_.Policy)" })
 if ($deviceCode.AtRisk) { $critItems += 'DEVICECODE:atRisk' }
 $critSig = (($critItems | Where-Object { $_ } | Sort-Object) -join '|')
-$prevSig = Get-SocSecret -Name 'GeonosisSocAi-LastCriticalSig'
+$prevSig = Get-SocSecret -Name 'SocAi-LastCriticalSig'
 
-# --- Puente a agentes SOC interactivos: normalizar señales -> 'GeonosisSocAi-SocAlerts' --------
+# --- Puente a agentes SOC interactivos: normalizar señales -> 'SocAi-SocAlerts' --------
 # Se persiste SIEMPRE (antes del dedup de notificación) para que el bridge local
 # (agents-soc/ingest/Import-SocAlerts.ps1) tenga las alertas accionables actuales.
 try {
     $socAlerts = Export-SocAlerts -Incidents $incidents -Identity $identity -AttackPaths $paths `
         -Drift $drift -DeviceCode $deviceCode -PasswordSpray $spray `
         -Hunting ([pscustomobject]@{ OAuthApps=$ahOauth; UrlClicks=$ahUrl }) -LookbackDays $days
-    Set-SocState -Name 'GeonosisSocAi-SocAlerts' -Value (@($socAlerts) | ConvertTo-Json -Depth 8 -Compress)
-    Write-Output "Puente SOC: $(@($socAlerts).Count) alertas normalizadas -> GeonosisSocAi-SocAlerts."
+    Set-SocState -Name 'SocAi-SocAlerts' -Value (@($socAlerts) | ConvertTo-Json -Depth 8 -Compress)
+    Write-Output "Puente SOC: $(@($socAlerts).Count) alertas normalizadas -> SocAi-SocAlerts."
 } catch { Write-Warning "[socalerts] no se pudo exportar el puente: $($_.Exception.Message)" }
 
 if ($Mode -eq 'critical') {
@@ -102,7 +102,7 @@ if ($Mode -eq 'critical') {
 
 # --- A. Informe: ensamblar y publicar ---------------------------------------
 # crown jewels (para que la IA reconozca identidades privilegiadas en la correlación)
-$cjRaw = Get-SocSecret -Name 'GeonosisSocAi-CrownJewels'
+$cjRaw = Get-SocSecret -Name 'SocAi-CrownJewels'
 $crownJewels = if ($cjRaw) { try { $cjRaw | ConvertFrom-Json } catch { $null } } else { $null }
 
 $data = [ordered]@{
@@ -124,7 +124,7 @@ $data = [ordered]@{
 }
 
 # estado del reporte anterior (para "qué cambió")
-$prevRaw   = Get-SocSecret -Name 'GeonosisSocAi-LastState'
+$prevRaw   = Get-SocSecret -Name 'SocAi-LastState'
 $prevState = if ($prevRaw) { try { $prevRaw | ConvertFrom-Json } catch { $null } } else { $null }
 
 # Postura (#8): Secure Score + Exposure con delta vs previo.
@@ -138,11 +138,11 @@ $report = New-SocReport -Mode $Mode -Data $data -Settings $settings -PeriodDays 
 Publish-SocReport -Report $report -Settings $settings
 
 # Tickets (#9): derivar de la remediación, conservar estado/owner/due, postear lista a Teams, persistir (evidencia).
-$prevTkRaw = Get-SocSecret -Name 'GeonosisSocAi-Tickets'
+$prevTkRaw = Get-SocSecret -Name 'SocAi-Tickets'
 $prevTk    = if ($prevTkRaw) { try { $prevTkRaw | ConvertFrom-Json } catch { @() } } else { @() }
 $tickets   = Build-SocTickets -Report $report -PrevTickets $prevTk
 if ($settings.delivery.teams.enabled) { Send-SocTeamsTickets -Tickets $tickets -Settings $settings }
-Set-SocState -Name 'GeonosisSocAi-Tickets' -Value ($tickets | ConvertTo-Json -Depth 6 -Compress)
+Set-SocState -Name 'SocAi-Tickets' -Value ($tickets | ConvertTo-Json -Depth 6 -Compress)
 
 # guardar estado de esta corrida para el delta de la próxima
 $state = [ordered]@{
@@ -158,7 +158,7 @@ $state = [ordered]@{
     securePct          = $data.Posture.Secure.Pct           # para delta de Secure Score
     exposure           = $data.Posture.Exposure             # para delta de Exposure Score
 }
-Set-SocState -Name 'GeonosisSocAi-LastState' -Value ($state | ConvertTo-Json -Depth 6 -Compress)
+Set-SocState -Name 'SocAi-LastState' -Value ($state | ConvertTo-Json -Depth 6 -Compress)
 # guardar firma crítica para dedupe (evita renotificar lo mismo cada hora en modo critical)
-Set-SocState -Name 'GeonosisSocAi-LastCriticalSig' -Value $critSig
+Set-SocState -Name 'SocAi-LastCriticalSig' -Value $critSig
 Write-Output "== Reporte $Mode publicado =="

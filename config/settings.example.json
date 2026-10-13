@@ -18,10 +18,10 @@
     "apiVersion": "2023-06-01",
     "modelCritical": "claude-opus-4-8",
     "modelRoutine": "claude-sonnet-4-6",
-    "apiKeyVariable": "GeonosisSocAi-AnthropicKey"
+    "apiKeyVariable": "SocAi-AnthropicKey"
   },
   "delivery": {
-    "teams": { "enabled": true, "webhookVariable": "GeonosisSocAi-TeamsWebhook" },
+    "teams": { "enabled": true, "webhookVariable": "SocAi-TeamsWebhook" },
     "email": { "enabled": true, "from": "soc@example.com", "to": ["admin@example.com"] }
   },
   "schedule": {

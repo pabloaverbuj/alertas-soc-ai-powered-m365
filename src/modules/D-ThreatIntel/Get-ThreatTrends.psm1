@@ -37,8 +37,8 @@ function Get-ThreatFoxRecent {
         $body = @{ query = 'get_iocs'; days = $Days } | ConvertTo-Json
         # abuse.ch exige Auth-Key desde ~nov-2024. Variable opcional; sin key se omite el feed.
         $hdr = @{}
-        $key = Get-SocSecret -Name 'GeonosisSocAi-AbuseChKey'
-        if ($key) { $hdr['Auth-Key'] = $key } else { Write-Warning "[threatfox] Sin GeonosisSocAi-AbuseChKey - feed omitido."; return @() }
+        $key = Get-SocSecret -Name 'SocAi-AbuseChKey'
+        if ($key) { $hdr['Auth-Key'] = $key } else { Write-Warning "[threatfox] Sin SocAi-AbuseChKey - feed omitido."; return @() }
         $resp = Invoke-RestMethod -Method Post -Uri $script:Feeds.ThreatFox -Headers $hdr -Body $body -ContentType 'application/json'
         # Filtra a familias relevantes para M365/cloud (PhaaS / AiTM)
         $resp.data | Where-Object { $_.malware_printable -match 'Phish|EvilProxy|Tycoon|AiTM|Kali365' } |

@@ -130,13 +130,13 @@ alertas-soc-ai-powered-m365/
     crown-jewels.example.json
 
   src/
-    Invoke-GeonosisSocAi.ps1
+    Invoke-SocAi.ps1
     modules/
     kql/
     templates/
 
   deploy/
-    Deploy-GeonosisSocAi.ps1
+    Deploy-SocAi.ps1
     Grant-GraphRoles.ps1
 
   .claude/agents/
@@ -196,7 +196,7 @@ Definir:
 ### 5. Desplegar Azure Automation
 
 ```powershell
-.\deploy\Deploy-GeonosisSocAi.ps1 `
+.\deploy\Deploy-SocAi.ps1 `
   -SubscriptionId "<subscription-id>" `
   -ResourceGroup "<resource-group>" `
   -AutomationAccount "aa-soc-ai" `
@@ -220,7 +220,7 @@ pwsh -NoProfile -File .\deploy\Grant-GraphRoles.ps1 `
 Set-AzAutomationVariable `
   -ResourceGroupName "<resource-group>" `
   -AutomationAccountName "aa-soc-ai" `
-  -Name "GeonosisSocAi-TeamsWebhook" `
+  -Name "SocAi-TeamsWebhook" `
   -Value "<workflow-webhook-url>" `
   -Encrypted $true
 ```
@@ -230,7 +230,7 @@ Set-AzAutomationVariable `
 | Proveedor | Uso recomendado | Secreto requerido |
 |---|---|---|
 | Azure OpenAI | Producción con Managed Identity | No, usa identidad administrada. |
-| Anthropic | Fallback o pruebas puntuales | Sí, variable `GeonosisSocAi-AnthropicKey`. |
+| Anthropic | Fallback o pruebas puntuales | Sí, variable `SocAi-AnthropicKey`. |
 
 La IA no ejecuta cambios por sí sola. Resume, prioriza, propone y prepara evidencias. Las acciones sensibles pasan por `DryRun` y aprobación humana.
 

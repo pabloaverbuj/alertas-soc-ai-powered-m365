@@ -16,8 +16,8 @@ function Connect-SocContext {
     # Local: archivo. En Azure Automation (sin filesystem, $PSScriptRoot vacío): Automation Variable.
     # Test-Path con -LiteralPath + SilentlyContinue para que una ruta inválida no tire terminating.
     $hasFile = $SettingsPath -and [System.IO.File]::Exists($SettingsPath)   # nunca tira ante path inválido
-    $json = if ($hasFile) { Get-Content -LiteralPath $SettingsPath -Raw } else { Get-SocSecret -Name 'GeonosisSocAi-Settings' }
-    if (-not $json) { throw "No hay settings (ni archivo $SettingsPath ni variable GeonosisSocAi-Settings)." }
+    $json = if ($hasFile) { Get-Content -LiteralPath $SettingsPath -Raw } else { Get-SocSecret -Name 'SocAi-Settings' }
+    if (-not $json) { throw "No hay settings (ni archivo $SettingsPath ni variable SocAi-Settings)." }
     $settings = $json | ConvertFrom-Json
     $script:Ctx = [pscustomobject]@{
         Settings    = $settings

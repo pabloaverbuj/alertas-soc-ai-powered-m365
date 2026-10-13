@@ -30,7 +30,7 @@ device-code, config drift, attack paths, password spray, hunting OAuth/phishing)
 directamente** a estos agentes:
 
 ```
-Runbook → Export-SocAlerts (normaliza) → Automation Variable GeonosisSocAi-SocAlerts
+Runbook → Export-SocAlerts (normaliza) → Automation Variable SocAi-SocAlerts
        → Import-SocAlerts.ps1 (pull local) → agents-soc/inbox/ → soc-casemanager → cases/
 ```
 

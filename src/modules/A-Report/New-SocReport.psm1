@@ -17,8 +17,8 @@ function New-SocReport {
         [object] $PrevState = $null
     )
     $now   = Get-Date
-    $title = if ($Mode -eq 'weekly') { 'Geonosis SOC - Reporte de Postura y Amenazas' }
-             else                    { 'Geonosis SOC - ALERTA Critica (out-of-band)' }
+    $title = if ($Mode -eq 'weekly') { 'Contoso SOC - Reporte de Postura y Amenazas' }
+             else                    { 'Contoso SOC - ALERTA Critica (out-of-band)' }
 
     # Análisis IA (si está configurada). Si no, resumen ejecutivo determinista lo arma el render.
     $exec = $null
@@ -193,7 +193,7 @@ function New-SocWowBadge {
 
 function New-SocSevColor {
     param([string]$Label)
-    # Paleta de marca Geonosis (sin verde: positivo = azul).
+    # Paleta de marca Contoso (sin verde: positivo = azul).
     switch -Regex (([string]$Label).ToLower()) {
         'crit|high|gap|fall|expuesto|atrisk' { '#FF6532'; break }   # Naranja 1
         'medium|med|warn'                    { '#FF9817'; break }   # Naranja 2
@@ -291,11 +291,11 @@ function ConvertTo-SocHtml {
     )
 
     # =================== PORTADA / METADATOS ===================
-    [void]$S.Append("<div class='coverband'><img src='cid:geologo' alt='Geonosis' width='220' style='display:block;border:0'></div>")
+    [void]$S.Append("<div class='coverband'><img src='cid:geologo' alt='Contoso' width='220' style='display:block;border:0'></div>")
     [void]$S.Append("<div class='cover'>")
     [void]$S.Append("<div class='kicker'>INFORME DE SEGURIDAD &middot; CONFIDENCIAL - USO INTERNO</div>")
     [void]$S.Append("<h1>$(ConvertTo-SocEnc $Report.Title)</h1>")
-    [void]$S.Append("<div class='sub'>Centro de Operaciones de Seguridad &middot; Geonosis S.A.</div>")
+    [void]$S.Append("<div class='sub'>Centro de Operaciones de Seguridad &middot; Contoso S.A.</div>")
     [void]$S.Append("</div>")
 
     $kpiCrit = @($d.Incidents.Critical).Count
@@ -633,7 +633,7 @@ function New-SocExecHtml {
     if ($Data.DeviceCode.AtRisk) { $bullets.Add("El flujo device-code NO está bloqueado: exposición directa a phishing tipo Kali365 (robo de token post-MFA).") }
     if ($Kpi.Gap -gt 0) { $bullets.Add("$($Kpi.Gap) escenario(s) de amenaza con cobertura de detección incompleta.") }
     if ($Kpi.Ep -gt 0) { $bullets.Add("$($Kpi.Ep) endpoint(s) con riesgo/exposición alta.") }
-    $p = "Durante el período analizado, la postura de seguridad de Geonosis presenta los siguientes puntos salientes. El detalle por dominio está en las secciones 2 a 5 y las acciones concretas, priorizadas en la sección 6."
+    $p = "Durante el período analizado, la postura de seguridad de Contoso presenta los siguientes puntos salientes. El detalle por dominio está en las secciones 2 a 5 y las acciones concretas, priorizadas en la sección 6."
     "<p>$(ConvertTo-SocEnc $p)</p>" + (New-SocList $bullets.ToArray())
 }
 
@@ -735,7 +735,7 @@ function Get-SocHtmlShell {
  .footer{margin-top:34px;color:#5b6470;font-size:11px;border-top:1px solid #e1e4e8;padding-top:10px}
 </style></head><body><div class="doc">
 $Body
-<div class="footer">Geonosis SOC AI powered &middot; generado automáticamente vía Azure Automation (Managed Identity) &middot; $([System.Net.WebUtility]::HtmlEncode($Generated)) &middot; Documento confidencial - no responder a este correo.</div>
+<div class="footer">Contoso SOC AI powered &middot; generado automáticamente vía Azure Automation (Managed Identity) &middot; $([System.Net.WebUtility]::HtmlEncode($Generated)) &middot; Documento confidencial - no responder a este correo.</div>
 </div></body></html>
 "@
 }
@@ -778,7 +778,7 @@ function Send-SocTeams {
 function Send-SocEmail {
     param([object] $Report, [string] $Html, [object] $Settings)
     # Logo oficial como adjunto inline (cid:geologo) - base64 en Automation Variable. CID porque Outlook no renderiza data-URI.
-    $logo = Get-SocSecret -Name 'GeonosisSocAi-LogoB64'
+    $logo = Get-SocSecret -Name 'SocAi-LogoB64'
     $attachments = @()
     if ($logo) {
         $attachments = @(@{

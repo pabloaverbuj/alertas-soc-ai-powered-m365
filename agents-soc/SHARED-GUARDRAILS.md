@@ -1,4 +1,4 @@
-# SHARED-GUARDRAILS — Geonosis SOC AI (agentes asistidos por IA)
+# SHARED-GUARDRAILS — Contoso SOC AI (agentes asistidos por IA)
 
 > Reglas obligatorias para **todos** los subagentes `soc-*`. Cargadas por referencia desde
 > cada `.claude/agents/soc-*.md`. Si un agente entra en conflicto con esto, **esto gana**.

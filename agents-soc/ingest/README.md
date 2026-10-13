@@ -1,6 +1,6 @@
 # Puente runbook → agentes SOC interactivos
 
-Conecta las **alertas que produce el runbook Azure Automation** (`Invoke-GeonosisSocAi`) con los
+Conecta las **alertas que produce el runbook Azure Automation** (`Invoke-SocAi`) con los
 **agentes interactivos** (`soc-*`). No hay filesystem compartido: el medio es una **Automation
 Variable**, igual que el resto del estado del runbook.
 
@@ -12,7 +12,7 @@ señales críticas (INC/HRU/AP/                        Import-SocAlerts.ps1
         │ Export-SocAlerts (normaliza)                       │
         ▼                                                    ▼
   Automation Variable  ────────  pull  ───────────►   agents-soc/inbox/*.json
-  GeonosisSocAi-SocAlerts                                    │
+  SocAi-SocAlerts                                    │
                                                              ▼  soc-casemanager
                                                       agents-soc/cases/<CaseId>/
                                                              │  (triage→forense→…→reporter)
@@ -23,9 +23,9 @@ señales críticas (INC/HRU/AP/                        Import-SocAlerts.ps1
 - `src/modules/F-Engine/Export-SocAlerts.psm1` normaliza las señales accionables al schema del
   **SOC Alert Normalizer** (`alertId` estable, `source`, `category`, `severity`, `entities`,
   `recommendedPlaybook`, `status:new`).
-- El orquestador (`Invoke-GeonosisSocAi.ps1`) lo llama en **cada corrida** (weekly y critical),
-  **antes** del dedup de notificación, y persiste el array en la variable `GeonosisSocAi-SocAlerts`.
-- El deploy crea la variable (`deploy/Deploy-GeonosisSocAi.ps1`).
+- El orquestador (`Invoke-SocAi.ps1`) lo llama en **cada corrida** (weekly y critical),
+  **antes** del dedup de notificación, y persiste el array en la variable `SocAi-SocAlerts`.
+- El deploy crea la variable (`deploy/Deploy-SocAi.ps1`).
 
 Señales mapeadas → categoría → playbook:
 
@@ -44,7 +44,7 @@ Señales mapeadas → categoría → playbook:
 
 ```powershell
 # 1. Traer las alertas del runbook al inbox (login Azure interactivo si hace falta)
-cd "C:\Users\Pablo Sosto\.local\bin\geonosis-soc-ai\agents-soc\ingest"
+cd "C:\Users\Pablo Sosto\.local\bin\contoso-soc-ai\agents-soc\ingest"
 ./Import-SocAlerts.ps1            # o -WhatIf para previsualizar
 
 # 2. En Claude Code, dentro del proyecto:

@@ -1,7 +1,7 @@
 # C-Observability/Get-AttackPaths.psm1
 # M10 — Rutas de ataque hacia activos críticos.
 # Vía Azure Resource Graph (Defender for Cloud attack paths): securityresources type microsoft.security/attackpaths.
-# (Geonosis sin IaaS/Defender for Cloud -> normalmente 0; degrada limpio, sin 400.)
+# (Contoso sin IaaS/Defender for Cloud -> normalmente 0; degrada limpio, sin 400.)
 
 function Get-AttackPaths {
     [CmdletBinding()]
@@ -9,9 +9,9 @@ function Get-AttackPaths {
         [object] $Settings = (Get-SocContext).Settings,
         [string] $CrownJewelsPath = "$PSScriptRoot/../../../config/crown-jewels.json"
     )
-    # Local: archivo. En Azure Automation: Automation Variable 'GeonosisSocAi-CrownJewels'.
+    # Local: archivo. En Azure Automation: Automation Variable 'SocAi-CrownJewels'.
     $hasCj  = $CrownJewelsPath -and [System.IO.File]::Exists($CrownJewelsPath)
-    $cjJson = if ($hasCj) { Get-Content -LiteralPath $CrownJewelsPath -Raw } else { Get-SocSecret -Name 'GeonosisSocAi-CrownJewels' }
+    $cjJson = if ($hasCj) { Get-Content -LiteralPath $CrownJewelsPath -Raw } else { Get-SocSecret -Name 'SocAi-CrownJewels' }
     $crown  = if ($cjJson) { $cjJson | ConvertFrom-Json } else { [pscustomobject]@{} }
 
     $sub   = $Settings.workspace.subscriptionId
